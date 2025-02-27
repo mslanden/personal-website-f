@@ -1,0 +1,683 @@
+/* Main container */
+.mainPageContainer {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    color: var(--text-light);
+    text-align: center;
+    overflow-x: hidden;
+    position: relative;
+    z-index: 1;
+}
+
+/* Header container */
+.headerContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 2rem;
+    width: 100%;
+    border-bottom: 1px solid rgba(205, 154, 109, 0.2);
+    position: sticky;
+    top: 0;
+    background: rgba(10, 10, 10, 0.8);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.logo {
+    height: 60px;
+    display: flex;
+    align-items: center;
+}
+
+.logoImage {
+    max-height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* Navigation styling */
+.headerContainer nav {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.headerContainer nav a {
+    color: var(--text-light);
+    text-decoration: none;
+    font-size: 1.1rem;
+    position: relative;
+    padding: 0.5rem 0;
+    transition: color 0.3s ease;
+}
+
+.headerContainer nav a::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--bronze);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.3s ease-in-out;
+}
+
+.headerContainer nav a:hover, 
+.headerContainer nav a.active {
+    color: var(--bronze-light);
+}
+
+.headerContainer nav a:hover::before,
+.headerContainer nav a.active::before {
+    transform: scaleX(1);
+}
+
+/* Hero section */
+.hero {
+    width: 100%;
+    height: 50vh;
+    min-height: 400px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.4)), 
+                url('/images/main-page-background.webp') no-repeat center center;
+    background-size: cover;
+    background-attachment: fixed;
+    margin-bottom: 3rem;
+}
+
+.heroOverlay {
+    text-align: center;
+    padding: 2rem;
+    max-width: 800px;
+    animation: fadeIn 0.8s ease-out forwards;
+}
+
+.heroTitle {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(45deg, var(--text-light), var(--bronze-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.heroLine {
+    width: 80px;
+    height: 3px;
+    background: var(--bronze);
+    margin: 0 auto 1.5rem;
+}
+
+.heroSubtitle {
+    font-size: 1.5rem;
+    color: var(--text-medium);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Main Content Container */
+.aboutContainer {
+    width: 100%;
+    max-width: 1200px;
+    padding: 0 2rem;
+    margin: 0 auto;
+}
+
+/* Bio Section - Two Columns */
+.bioSection {
+    display: flex;
+    margin-bottom: 5rem;
+    gap: 3rem;
+    align-items: stretch;
+}
+
+.bioImageWrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.bioImage {
+    position: relative;
+    width: 100%;
+    border-radius: 1rem;
+    overflow: hidden;
+    aspect-ratio: 1/1;
+    border: 1px solid rgba(205, 154, 109, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.bioSocials {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    justify-content: center;
+}
+
+.socialIcon {
+    padding: 0.75rem 1.25rem;
+    background: var(--card-bg);
+    border: 1px solid rgba(205, 154, 109, 0.2);
+    border-radius: 0.5rem;
+    color: var(--bronze);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.socialIcon:hover {
+    background: var(--card-dark-bg);
+    border-color: var(--bronze);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.bioContent {
+    flex: 1.5;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+.bioContent h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--bronze-light);
+}
+
+.bioContent p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+    color: var(--text-medium);
+}
+
+.statCards {
+    display: flex;
+    gap: 1rem;
+    margin: 2rem 0;
+}
+
+.statCard {
+    flex: 1;
+    background: var(--card-bg);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border: 1px solid rgba(205, 154, 109, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.statCard:hover {
+    transform: translateY(-5px);
+    border-color: var(--bronze);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.statNumber {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--bronze-light);
+    margin-bottom: 0.5rem;
+}
+
+.statLabel {
+    font-size: 0.9rem;
+    color: var(--text-medium);
+}
+
+.bioButton {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 1rem 2rem;
+    background: rgba(205, 154, 109, 0.1);
+    border: 1px solid var(--bronze);
+    border-radius: 0.5rem;
+    color: var(--bronze-light);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-align: center;
+    max-width: 200px;
+}
+
+.bioButton:hover {
+    background: var(--bronze);
+    color: var(--primary-bg);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Section Header Styling */
+.sectionHeader {
+    margin-bottom: 3rem;
+    text-align: center;
+}
+
+.sectionHeader h2 {
+    font-size: 2.5rem;
+    color: var(--bronze-light);
+    margin-bottom: 1rem;
+}
+
+.sectionDivider {
+    width: 80px;
+    height: 3px;
+    background: var(--bronze);
+    margin: 0 auto;
+}
+
+/* Skills Section */
+.skillsSection {
+    margin-bottom: 5rem;
+}
+
+.skillsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.skillCard {
+    background: var(--card-bg);
+    border-radius: 1rem;
+    padding: 2rem;
+    border: 1px solid rgba(205, 154, 109, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    text-align: left;
+}
+
+.skillCard:hover {
+    transform: translateY(-5px);
+    border-color: var(--bronze);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.skillIcon {
+    margin-bottom: 1.5rem;
+}
+
+.iconCircle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, var(--bronze-dark), var(--bronze-light));
+    position: relative;
+}
+
+.skillCard h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--bronze-light);
+}
+
+.skillCard p {
+    margin-bottom: 1.5rem;
+    color: var(--text-medium);
+    line-height: 1.6;
+}
+
+.skillList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.skillList li {
+    margin-bottom: 0.5rem;
+    padding-left: 1.5rem;
+    position: relative;
+    color: var(--text-medium);
+}
+
+.skillList li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.5rem;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--bronze);
+}
+
+/* Timeline Section */
+.timelineSection {
+    margin-bottom: 5rem;
+}
+
+.timeline {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    width: 2px;
+    background: var(--bronze);
+    top: 0;
+    bottom: 0;
+    left: 50px;
+    margin-left: -1px;
+}
+
+.timelineItem {
+    padding: 1rem 2rem 1rem 5rem;
+    position: relative;
+    background: var(--card-bg);
+    border-radius: 1rem;
+    border: 1px solid rgba(205, 154, 109, 0.1);
+    margin-bottom: 2rem;
+    text-align: left;
+    transition: all 0.3s ease;
+}
+
+.timelineItem:hover {
+    transform: translateX(10px);
+    border-color: var(--bronze);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.timelineItem::before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--bronze);
+    left: -9px;
+    top: 2rem;
+    box-shadow: 0 0 0 4px rgba(205, 154, 109, 0.2);
+}
+
+.timelineDate {
+    font-size: 1rem;
+    color: var(--bronze);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.timelineContent h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+    color: var(--bronze-light);
+}
+
+.timelineContent p {
+    color: var(--text-medium);
+    line-height: 1.6;
+}
+
+/* Philosophy Section */
+.philosophySection {
+    margin-bottom: 5rem;
+}
+
+.philosophyCard {
+    background: var(--card-dark-bg);
+    border-radius: 1rem;
+    padding: 3rem;
+    border: 1px solid rgba(205, 154, 109, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    text-align: left;
+}
+
+.philosophyCard h2 {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    color: var(--bronze-light);
+    text-align: center;
+}
+
+.philosophyContent p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+    color: var(--text-medium);
+}
+
+.philosophyQuote {
+    border-left: 3px solid var(--bronze);
+    padding-left: 1.5rem;
+    font-style: italic;
+    font-size: 1.25rem;
+    color: var(--bronze-light);
+    margin: 2rem 0;
+}
+
+/* CTA Section */
+.ctaSection {
+    margin-bottom: 5rem;
+    background: linear-gradient(rgba(10, 10, 10, 0.8), rgba(10, 10, 10, 0.9)), 
+                url('/images/main-page-background.webp') no-repeat center center;
+    background-size: cover;
+    border-radius: 1rem;
+    overflow: hidden;
+    border: 1px solid rgba(205, 154, 109, 0.2);
+}
+
+.ctaContent {
+    padding: 4rem 2rem;
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.ctaContent h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--bronze-light);
+}
+
+.ctaContent p {
+    font-size: 1.2rem;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+    color: var(--text-medium);
+}
+
+.ctaButton {
+    display: inline-block;
+    padding: 1rem 2.5rem;
+    background: var(--bronze);
+    color: var(--primary-bg);
+    font-weight: 600;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 1px solid var(--bronze);
+}
+
+.ctaButton:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    background: transparent;
+    color: var(--bronze-light);
+}
+
+/* Footer */
+.footer {
+    width: 100%;
+    padding: 2rem;
+    background: rgba(10, 10, 10, 0.8);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(205, 154, 109, 0.2);
+}
+
+.footerContent {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footerLeft {
+    font-size: 0.9rem;
+    color: var(--text-medium);
+}
+
+.footerRight {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.socialLink {
+    color: var(--bronze);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    padding-bottom: 0.25rem;
+}
+
+.socialLink::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--bronze);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease;
+}
+
+.socialLink:hover {
+    color: var(--bronze-light);
+}
+
+.socialLink:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Layout */
+@media (max-width: 992px) {
+    .bioSection {
+        flex-direction: column;
+    }
+    
+    .bioImage {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    
+    .bioContent {
+        text-align: center;
+    }
+    
+    .bioButton {
+        margin: 1rem auto 0;
+    }
+    
+    .statCards {
+        justify-content: center;
+    }
+    
+    .timeline::before {
+        left: 30px;
+    }
+    
+    .timelineItem::before {
+        left: -29px;
+    }
+    
+    .timelineItem {
+        padding-left: 3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .headerContainer {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+    }
+    
+    .headerContainer nav {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .hero {
+        height: 40vh;
+    }
+    
+    .heroTitle {
+        font-size: 2.5rem;
+    }
+    
+    .heroSubtitle {
+        font-size: 1.2rem;
+    }
+    
+    .skillCard {
+        padding: 1.5rem;
+    }
+    
+    .timelineItem {
+        padding: 1rem;
+        padding-left: 3rem;
+    }
+    
+    .philosophyCard {
+        padding: 2rem;
+    }
+    
+    .footerContent {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .footerRight {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .statCards {
+        flex-direction: column;
+    }
+    
+    .statCard {
+        margin-bottom: 1rem;
+    }
+    
+    .ctaContent {
+        padding: 3rem 1rem;
+    }
+}

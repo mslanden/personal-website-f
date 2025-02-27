@@ -1,0 +1,9 @@
+.aider*
+.env
+venv
+.zed
+logs
+.ropeproject
+.env.local
+.next/
+node_modules/
