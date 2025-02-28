@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, KeyboardEvent } from "react";
 import styles from "./page.module.css";
 import SchedulingPanel from "../../components/SchedulingPanel";
 import DocumentViewer from "../../components/DocumentViewer";
+import { sendMessage, createConversation } from "../../services/api";
 
 interface Message {
   sender: "user" | "assistant";
@@ -24,6 +25,8 @@ export default function ChatPage() {
     "idle" | "loading" | "speaking" | "typing"
   >("idle");
   const chatOutputRef = useRef<HTMLDivElement>(null);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const userId = "temp-user-" + Math.random().toString(36).substring(2, 9); // Generate a random user ID
 
   const [isUserTyping, setIsUserTyping] = useState<boolean>(false);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -37,6 +40,27 @@ export default function ChatPage() {
     type: null,
     content: null,
   });
+
+  // Initialize conversation with the Lambda backend
+  useEffect(() => {
+    const initConversation = async () => {
+      try {
+        const response = await createConversation(userId, "Website Chat");
+        if (response.status === "success" && response.data && response.data.id) {
+          setConversationId(response.data.id);
+          console.log("Conversation created with ID:", response.data.id);
+        } else {
+          console.error("Failed to create conversation:", response);
+        }
+      } catch (error) {
+        console.error("Error creating conversation:", error);
+      }
+    };
+
+    if (!conversationId) {
+      initConversation();
+    }
+  }, [userId, conversationId]);
 
   // Update the typing flag on every input change
   const handleUserTyping = () => {
@@ -75,52 +99,52 @@ export default function ChatPage() {
     // Reset typing flag when sending
     setIsUserTyping(false);
     const input = userInput.trim();
-    if (!input) return;
+    if (!input || !conversationId) return;
+    
     setChatHistory((prev) => [...prev, { sender: "user", text: input }]);
     setUserInput("");
     setLoading(true);
-
     setStatusState("loading");
+    
     try {
-      const res = await fetch("/api/query", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ input }),
+      // Send to the Lambda backend directly
+      const response = await sendMessage({
+        user_id: userId,
+        conversation_id: conversationId,
+        content: input,
+        role: "user"
       });
-      const data = await res.json();
+      
       setStatusState("speaking");
-      setChatHistory((prev) => [
-        ...prev,
-        { sender: "assistant", text: data.response },
-      ]);
+      
+      if (response.status === "success" && response.data) {
+        // Get the AI response
+        const aiResponse = response.data.ai_response?.content || 
+                         "I'm sorry, I couldn't process your request at this time.";
+                         
+        setChatHistory((prev) => [
+          ...prev,
+          { sender: "assistant", text: aiResponse },
+        ]);
+      } else {
+        throw new Error("Invalid response from backend");
+      }
 
       setTimeout(() => {
         setStatusState("idle");
       }, 2000);
-
-      if (data.right_card_content_type) {
-        console.log("API Response:", data);
-        setPanel({
-          visible: true,
-          type: data.right_card_content_type.toLowerCase(),
-          content: data.right_card_content,
-        });
-        console.log("Setting Panel:", {
-          type: data.right_card_content_type.toLowerCase(),
-          content: data.right_card_content,
-        });
-      } else {
-        setPanel({ visible: false, type: null, content: null });
-      }
+      
+      // Clear any previous panel content
+      setPanel({ visible: false, type: null, content: null });
+      
     } catch (error: any) {
-      console.error("Error:", error);
+      console.error("API error:", error);
       setStatusState("idle");
       setChatHistory((prev) => [
         ...prev,
         {
           sender: "assistant",
-          text: "Sorry, I'm having trouble connecting. Please try again later.",
+          text: "Sorry, I'm having trouble connecting to my backend. Please try again later.",
         },
       ]);
     }

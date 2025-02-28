@@ -7,3 +7,4 @@ logs
 .env.local
 .next/
 node_modules/
+.DS_Store
