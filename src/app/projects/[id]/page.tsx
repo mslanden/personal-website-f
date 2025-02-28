@@ -3,8 +3,10 @@
 import { useEffect, useState, use } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import styles from '../page.module.css';
+import Markdown from 'react-markdown';
+import styles from './page.module.css';
 import { Metadata } from 'next';
+import { getProjectBySlug, Project as ProjectType } from '../../../lib/supabase-client';
 
 // Define project data structure
 type Project = {
@@ -21,8 +23,8 @@ type Project = {
   date: string;
 };
 
-// Project data (typically this would come from an API or database)
-const projects: Project[] = [
+// Fallback project data
+const fallbackProjects: Project[] = [
   {
     id: "smart-home-ai",
     title: "Smart Home AI System",
@@ -125,9 +127,24 @@ The development process involved collaboration with astronomy experts to ensure 
   }
 ];
 
-// Function to get project data
-const getProject = (id: string): Project | undefined => {
-  return projects.find(project => project.id === id);
+// Function to get project data from fallback
+const getFallbackProject = (id: string): Project | undefined => {
+  return fallbackProjects.find(project => project.id === id);
+};
+
+// Convert database project to detail project
+const convertToDetailProject = (dbProject: ProjectType): Project => {
+  return {
+    id: dbProject.id,
+    title: dbProject.title,
+    shortDesc: dbProject.description,
+    fullDesc: dbProject.content,
+    images: [dbProject.image_url], // Use main image, we'd need to add more images to DB model
+    technologies: dbProject.technologies || [],
+    features: dbProject.features || [], // Use features from DB
+    category: dbProject.category,
+    date: "2025" // We'd need to add this to DB model
+  };
 };
 
 export default function ProjectDetailPage({ params }: { params: { id: string } | Promise<{ id: string }> }) {
@@ -137,11 +154,31 @@ export default function ProjectDetailPage({ params }: { params: { id: string } |
   const { id } = use(params as Promise<{ id: string }>);
   
   useEffect(() => {
-    // In a real app, this would be an API call
-    setIsLoading(true);
-    const projectData = getProject(id);
-    setProject(projectData);
-    setIsLoading(false);
+    const loadProject = async () => {
+      setIsLoading(true);
+      try {
+        // Try to get from database first
+        const dbProject = await getProjectBySlug(id);
+        
+        if (dbProject) {
+          // Convert database project to detail project
+          setProject(convertToDetailProject(dbProject));
+        } else {
+          // Fallback to static data
+          const fallbackProject = getFallbackProject(id);
+          setProject(fallbackProject);
+        }
+      } catch (error) {
+        console.error("Error loading project:", error);
+        // Try fallback if API fails
+        const fallbackProject = getFallbackProject(id);
+        setProject(fallbackProject);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadProject();
   }, [id]);
   
   if (isLoading) {
@@ -250,7 +287,9 @@ export default function ProjectDetailPage({ params }: { params: { id: string } |
         <div className={styles.projectContent}>
           <div className={styles.projectDescription}>
             <h2>About this Project</h2>
-            <p>{project.fullDesc}</p>
+            <div className={styles.cardContainer}>
+              <Markdown>{project.fullDesc}</Markdown>
+            </div>
           </div>
           
           <div className={styles.projectSidebar}>
@@ -290,9 +329,9 @@ export default function ProjectDetailPage({ params }: { params: { id: string } |
             <div className={styles.projectFeatures}>
               <h3>Key Features</h3>
               <ul>
-                {project.features.map((feature, index) => (
+                {Array.isArray(project.features) ? project.features.map((feature, index) => (
                   <li key={index}>{feature}</li>
-                ))}
+                )) : null}
               </ul>
             </div>
           </div>

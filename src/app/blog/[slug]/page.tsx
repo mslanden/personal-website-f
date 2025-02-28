@@ -1,10 +1,14 @@
 "use client";
 
-import { useState, useEffect, FC } from "react";
+import { useState, useEffect, FC, use } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Markdown from "react-markdown";
-import styles from "../page.module.css";
+import styles from "./page.module.css";
+import {
+  getBlogPostBySlug,
+  BlogPost as DbBlogPost,
+} from "../../../lib/supabase-client";
 
 type BlogPost = {
   slug: string;
@@ -16,19 +20,34 @@ type BlogPost = {
   excerpt: string;
 };
 
-// This would typically come from an API or CMS
-async function getBlogPost(slug: string): Promise<BlogPost | null> {
-  // Mock data for demonstration
-  const posts: Record<string, BlogPost> = {
-    "building-ai-agents-with-llms": {
-      slug: "building-ai-agents-with-llms",
-      title: "Building AI Agents with LLMs",
-      date: "February 20, 2025",
-      author: "Marcelino Landen",
-      imageUrl: "/images/ai-agent-blog.webp",
-      excerpt:
-        "A deep dive into crafting autonomous AI agents using large language models.",
-      content: `
+// Convert database blog post to display format
+const convertToDisplayPost = (dbPost: DbBlogPost): BlogPost => {
+  return {
+    slug: dbPost.slug,
+    title: dbPost.title,
+    date: new Date(dbPost.published_at).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }),
+    author: dbPost.author,
+    imageUrl: dbPost.image_url,
+    content: dbPost.content,
+    excerpt: dbPost.excerpt,
+  };
+};
+
+// Fallback blog posts for demonstration
+const fallbackPosts: Record<string, BlogPost> = {
+  "building-ai-agents-with-llms": {
+    slug: "building-ai-agents-with-llms",
+    title: "Building AI Agents with LLMs",
+    date: "February 20, 2025",
+    author: "Marcelino Landen",
+    imageUrl: "/images/ai-agent-blog.webp",
+    excerpt:
+      "A deep dive into crafting autonomous AI agents using large language models.",
+    content: `
 # Building AI Agents with LLMs
 
 Creating autonomous AI agents using Large Language Models (LLMs) represents one of the most exciting frontiers in artificial intelligence today. At Agentica AI, we've been exploring innovative approaches to agent design that leverage the power of models like GPT-4, Claude, and others.
@@ -80,16 +99,15 @@ At Agentica AI, we're working to solve these issues through advanced prompting t
 
 Stay tuned for more updates on our agent development work!
       `,
-    },
-    "nextjs-tricks-for-faster-web-apps": {
-      slug: "nextjs-tricks-for-faster-web-apps",
-      title: "Next.js Tricks for Faster Web Apps",
-      date: "February 15, 2025",
-      author: "Marcelino Landen",
-      imageUrl: "/images/web-dev-blog.webp",
-      excerpt:
-        "Speed up your web development with these Next.js optimizations.",
-      content: `
+  },
+  "nextjs-tricks-for-faster-web-apps": {
+    slug: "nextjs-tricks-for-faster-web-apps",
+    title: "Next.js Tricks for Faster Web Apps",
+    date: "February 15, 2025",
+    author: "Marcelino Landen",
+    imageUrl: "/images/web-dev-blog.webp",
+    excerpt: "Speed up your web development with these Next.js optimizations.",
+    content: `
 # Next.js Tricks for Faster Web Apps
 
 Next.js has revolutionized React development with its powerful features for building high-performance web applications. Through my work at Agentica AI, I've gathered several optimization techniques that can significantly improve your Next.js app's performance.
@@ -169,11 +187,8 @@ Always measure the impact of your optimizations:
 
 These Next.js optimizations have helped us at Agentica AI reduce load times by over 40% and significantly improve user experience. Which of these techniques will you implement first?
       `,
-    },
-  };
-
-  return posts[slug] || null;
-}
+  },
+};
 
 interface BlogPageProps {
   params: {
@@ -184,19 +199,39 @@ interface BlogPageProps {
 const BlogPostPage: FC<BlogPageProps> = ({ params }) => {
   const [post, setPost] = useState<BlogPost | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   useEffect(() => {
     async function loadPost() {
       setIsLoading(true);
-      const data = await getBlogPost(params.slug);
-      setPost(data);
-      setIsLoading(false);
-    }
-    
-    loadPost();
-  }, [params.slug]);
+      // Unwrap params outside try/catch block
+      const slug = use(params).slug;
+      
+      try {
+        // Try to get from database first
+        const dbPost = await getBlogPostBySlug(slug);
 
-  if (!post) {
+        if (dbPost) {
+          // Convert database post to display format
+          setPost(convertToDisplayPost(dbPost));
+        } else {
+          // Fallback to static data
+          const fallbackPost = fallbackPosts[slug] || null;
+          setPost(fallbackPost);
+        }
+      } catch (error) {
+        console.error("Error loading blog post:", error);
+        // Try fallback if API fails
+        const fallbackPost = fallbackPosts[slug] || null;
+        setPost(fallbackPost);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadPost();
+  }, [params]);
+
+  if (isLoading) {
     return (
       <div className={styles.mainPageContainer}>
         <header className={styles.headerContainer}>

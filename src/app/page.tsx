@@ -5,12 +5,30 @@ import Image from "next/image";
 import Link from "next/link";
 import GitContributionGraph from "./git-contribution-graph";
 import { useEffect, useState } from "react";
+import { getFeaturedProjects, Project } from "../lib/supabase-client";
 
 export default function MainPage() {
   const [isVisible, setIsVisible] = useState(false);
+  const [featuredProjects, setFeaturedProjects] = useState<Project[]>([]);
+  const [isLoadingProject, setIsLoadingProject] = useState(true);
 
   useEffect(() => {
     setIsVisible(true);
+    
+    // Load featured projects from database
+    const loadFeaturedProjects = async () => {
+      setIsLoadingProject(true);
+      try {
+        const projects = await getFeaturedProjects(3);
+        setFeaturedProjects(projects);
+      } catch (error) {
+        console.error("Error loading featured projects:", error);
+      } finally {
+        setIsLoadingProject(false);
+      }
+    };
+    
+    loadFeaturedProjects();
   }, []);
 
   return (
@@ -175,84 +193,116 @@ export default function MainPage() {
             <div className={styles.titleUnderline}></div>
           </div>
           <div className={styles.projectsGrid}>
-            <Link href="/projects" className={styles.projectCard}>
-              <div className={styles.projectImageWrapper}>
-                <Image
-                  src="/images/text-editor.webp"
-                  alt="Smart Code Editor"
-                  width={400}
-                  height={250}
-                  className={styles.projectImage}
-                />
-                <div className={styles.projectOverlay}>
-                  <span>View Details</span>
-                </div>
-              </div>
-              <div className={styles.projectContent}>
-                <h3>Smart Code Editor</h3>
-                <p>
-                  An AI-enhanced text editor designed to streamline coding
-                  workflows with intelligent code suggestions.
-                </p>
-                <div className={styles.projectTags}>
-                  <span>TypeScript</span>
-                  <span>React</span>
-                  <span>AI</span>
-                </div>
-              </div>
-            </Link>
-            <Link href="/projects" className={styles.projectCard}>
-              <div className={styles.projectImageWrapper}>
-                <Image
-                  src="/images/mars-colony.webp"
-                  alt="Mars Colony Simulator"
-                  width={400}
-                  height={250}
-                  className={styles.projectImage}
-                />
-                <div className={styles.projectOverlay}>
-                  <span>View Details</span>
-                </div>
-              </div>
-              <div className={styles.projectContent}>
-                <h3>Mars Colony Simulator</h3>
-                <p>
-                  A strategic simulation game exploring the challenges of
-                  establishing a sustainable colony on Mars.
-                </p>
-                <div className={styles.projectTags}>
-                  <span>Unity</span>
-                  <span>C#</span>
-                  <span>Simulation</span>
-                </div>
-              </div>
-            </Link>
-            <Link href="/projects" className={styles.projectCard}>
-              <div className={styles.projectImageWrapper}>
-                <Image
-                  src="/images/future-town.webp"
-                  alt="Urban Planner"
-                  width={400}
-                  height={250}
-                  className={styles.projectImage}
-                />
-                <div className={styles.projectOverlay}>
-                  <span>View Details</span>
-                </div>
-              </div>
-              <div className={styles.projectContent}>
-                <h3>Futuristic Urban Planner</h3>
-                <p>
-                  An AI-driven project reimagining city planning with predictive
-                  analytics and sustainable design.
-                </p>
-                <div className={styles.projectTags}>
-                  <span>Python</span>
-                  <span>TensorFlow</span>
-                  <span>WebGL</span>
-                </div>
-              </div>
-            </Link>
+            {isLoadingProject ? (
+              <div className={styles.loadingContainer}>Loading featured projects...</div>
+            ) : featuredProjects.length > 0 ? (
+              featuredProjects.map((project) => (
+                <Link key={project.id} href={`/projects/${project.slug}`} className={styles.projectCard}>
+                  <div className={styles.projectImageWrapper}>
+                    <Image
+                      src={project.image_url}
+                      alt={project.title}
+                      width={400}
+                      height={250}
+                      className={styles.projectImage}
+                    />
+                    <div className={styles.projectOverlay}>
+                      <span>View Details</span>
+                    </div>
+                  </div>
+                  <div className={styles.projectContent}>
+                    <h3>{project.title}</h3>
+                    <p>{project.description}</p>
+                    <div className={styles.projectTags}>
+                      {project.technologies?.slice(0, 3).map((tech, index) => (
+                        <span key={index}>{tech}</span>
+                      ))}
+                    </div>
+                  </div>
+                </Link>
+              ))
+            ) : (
+              <>
+                <Link href="/projects" className={styles.projectCard}>
+                  <div className={styles.projectImageWrapper}>
+                    <Image
+                      src="/images/text-editor.webp"
+                      alt="Smart Code Editor"
+                      width={400}
+                      height={250}
+                      className={styles.projectImage}
+                    />
+                    <div className={styles.projectOverlay}>
+                      <span>View Details</span>
+                    </div>
+                  </div>
+                  <div className={styles.projectContent}>
+                    <h3>Smart Code Editor</h3>
+                    <p>
+                      An AI-enhanced text editor designed to streamline coding
+                      workflows with intelligent code suggestions.
+                    </p>
+                    <div className={styles.projectTags}>
+                      <span>TypeScript</span>
+                      <span>React</span>
+                      <span>AI</span>
+                    </div>
+                  </div>
+                </Link>
+                <Link href="/projects" className={styles.projectCard}>
+                  <div className={styles.projectImageWrapper}>
+                    <Image
+                      src="/images/mars-colony.webp"
+                      alt="Mars Colony Simulator"
+                      width={400}
+                      height={250}
+                      className={styles.projectImage}
+                    />
+                    <div className={styles.projectOverlay}>
+                      <span>View Details</span>
+                    </div>
+                  </div>
+                  <div className={styles.projectContent}>
+                    <h3>Mars Colony Simulator</h3>
+                    <p>
+                      A strategic simulation game exploring the challenges of
+                      establishing a sustainable colony on Mars.
+                    </p>
+                    <div className={styles.projectTags}>
+                      <span>Unity</span>
+                      <span>C#</span>
+                      <span>Simulation</span>
+                    </div>
+                  </div>
+                </Link>
+                <Link href="/projects" className={styles.projectCard}>
+                  <div className={styles.projectImageWrapper}>
+                    <Image
+                      src="/images/future-town.webp"
+                      alt="Urban Planner"
+                      width={400}
+                      height={250}
+                      className={styles.projectImage}
+                    />
+                    <div className={styles.projectOverlay}>
+                      <span>View Details</span>
+                    </div>
+                  </div>
+                  <div className={styles.projectContent}>
+                    <h3>Futuristic Urban Planner</h3>
+                    <p>
+                      An AI-driven project reimagining city planning with predictive
+                      analytics and sustainable design.
+                    </p>
+                    <div className={styles.projectTags}>
+                      <span>Python</span>
+                      <span>TensorFlow</span>
+                      <span>WebGL</span>
+                    </div>
+                  </div>
+                </Link>
+              </>
+            )}
           </div>
           <div className={styles.centerButton}>
             <Link href="/projects" className={styles.primaryButton}>

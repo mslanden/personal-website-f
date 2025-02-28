@@ -3,93 +3,87 @@
 import styles from "./page.module.css";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getBlogPosts, getBlogCategories } from "../../lib/supabase-client";
 
 export default function BlogPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
+  const [blogPosts, setBlogPosts] = useState<any[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
 
+  // Always include "all" as the first filter
   const filters = [
     { id: "all", name: "All Posts" },
-    { id: "ai", name: "AI & Tech" },
-    { id: "dev", name: "Web Dev" },
-    { id: "tutorial", name: "Tutorials" },
-    { id: "lifestyle", name: "Lifestyle" },
+    // Dynamic categories will be added to this
+    ...categories.map(category => ({
+      id: category,
+      name: category.charAt(0).toUpperCase() + category.slice(1) // Capitalize first letter
+    }))
   ];
-
-  const blogPosts = [
-    {
-      id: "ai-agents",
-      category: "ai",
-      title: "Building AI Agents with LLMs",
-      date: "February 20, 2025",
-      excerpt:
-        "A deep dive into crafting autonomous AI agents using large language models, with tips from my work at Agentica AI.",
-      image: "/images/ai-agent-blog.webp",
-      slug: "building-ai-agents-with-llms",
-      featured: true,
-    },
-    {
-      id: "nextjs-tricks",
-      category: "dev",
-      title: "Next.js Tricks for Faster Web Apps",
-      date: "February 15, 2025",
-      excerpt:
-        "Speed up your web development with these Next.js optimizations I've picked up on the job.",
-      image: "/images/web-dev-blog.webp",
-      slug: "nextjs-tricks",
-      featured: false,
-    },
-    {
-      id: "surfing-tech",
-      category: "lifestyle",
-      title: "Surfing Meets Tech: IoT on the Waves",
-      date: "February 10, 2025",
-      excerpt:
-        "How I combined my love for surfing with IoT to track conditions in SoCal.",
-      image: "/images/surfing-tech-blog.webp",
-      slug: "surfing-tech",
-      featured: false,
-    },
-    {
-      id: "cloud-shift",
-      category: "ai",
-      title: "Cloud Shift: Empowering Developers",
-      date: "February 5, 2025",
-      excerpt:
-        "Exploring Agentica AI's cloud tech approach and its impact on modern dev workflows.",
-      image: "/images/cloud-blog.webp",
-      slug: "cloud-shift",
-      featured: false,
-    },
-    {
-      id: "prompt-engineering",
-      category: "tutorial",
-      title: "Prompt Engineering for AI Developers",
-      date: "January 30, 2025",
-      excerpt:
-        "A practical guide to crafting effective prompts for large language models like Claude and GPT-4.",
-      image: "/images/prompt-engineering.webp",
-      slug: "prompt-engineering",
-      featured: false,
-    },
-    {
-      id: "socal-tech",
-      category: "lifestyle",
-      title: "The SoCal Tech Renaissance",
-      date: "January 25, 2025",
-      excerpt:
-        "How Southern California is becoming a new hub for AI and tech innovation.",
-      image: "/images/socal-tech.webp",
-      slug: "socal-tech",
-      featured: false,
-    },
-  ];
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Fetch posts and categories in parallel
+        const [posts, categoryList] = await Promise.all([
+          getBlogPosts(),
+          getBlogCategories()
+        ]);
+        
+        // Set categories
+        setCategories(categoryList);
+        
+        // Transform posts to fit the expected format
+        const formattedPosts = posts.map(post => ({
+          id: post.id,
+          category: post.category || "other",
+          title: post.title,
+          date: new Date(post.published_at).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          }),
+          excerpt: post.excerpt,
+          image: post.image_url || "/images/default-blog.webp",
+          slug: post.slug,
+          featured: post.featured
+        }));
+        
+        setBlogPosts(formattedPosts);
+      } catch (err) {
+        console.error("Error fetching blog posts:", err);
+        setError("Failed to load blog posts");
+        
+        // Fallback to sample posts for development
+        setBlogPosts([
+          {
+            id: "sample-post",
+            category: "dev",
+            title: "Sample Blog Post",
+            date: "February 27, 2025",
+            excerpt: "This is a sample blog post for when the database connection fails.",
+            image: "/images/web-dev-blog.webp",
+            slug: "sample-post",
+            featured: true,
+          }
+        ]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchData();
+  }, []);
 
   const featuredPost = blogPosts.find((post) => post.featured);
 
   const filteredPosts = blogPosts
-    .filter((post) => !post.featured) // Exclude featured post
+    // Include all posts in all views (no exclusions)
     .filter((post) => activeFilter === "all" || post.category === activeFilter) // Filter by category
     .filter(
       (post) =>
@@ -200,7 +194,21 @@ export default function BlogPage() {
             </div>
           </div>
 
-          {filteredPosts.length > 0 ? (
+          {isLoading ? (
+            <div className={styles.loadingContainer}>
+              <p>Loading blog posts...</p>
+            </div>
+          ) : error ? (
+            <div className={styles.errorContainer}>
+              <p>{error}</p>
+              <button 
+                className={styles.retryButton}
+                onClick={() => window.location.reload()}
+              >
+                Retry
+              </button>
+            </div>
+          ) : filteredPosts.length > 0 ? (
             <div className={styles.blogGrid}>
               {filteredPosts.map((post) => (
                 <article key={post.id} className={styles.blogCard}>

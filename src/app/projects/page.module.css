@@ -521,6 +521,12 @@
   
   .featuredImageContainer {
     width: 100%;
+    height: 400px;
+  }
+  
+  .featuredImage {
+    object-fit: cover !important;
+    object-position: center !important;
   }
 }
 
