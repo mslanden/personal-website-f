@@ -12,32 +12,71 @@ interface MessagePayload {
 
 // Chat/Message functions
 export async function sendMessage(payload: MessagePayload) {
+  console.log("Sending message to API:", payload);
   const response = await fetch(`${API_BASE_URL}/messages`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Accept': 'application/json',
     },
+    mode: 'cors',
     body: JSON.stringify(payload),
   });
+  
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error(`API error: ${response.status} ${response.statusText}`, errorText);
+    throw new Error(`API error: ${response.status} ${response.statusText}`);
+  }
+  
   return response.json();
 }
 
 export async function getConversation(conversationId: string) {
-  const response = await fetch(`${API_BASE_URL}/conversations/${conversationId}`);
+  console.log("Getting conversation:", conversationId);
+  const response = await fetch(`${API_BASE_URL}/conversations/${conversationId}`, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+    },
+    mode: 'cors',
+  });
+  
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error(`API error: ${response.status} ${response.statusText}`, errorText);
+    throw new Error(`API error: ${response.status} ${response.statusText}`);
+  }
+  
   return response.json();
 }
 
 export async function createConversation(userId: string, title: string) {
+  console.log("Creating conversation for user:", userId, "with title:", title);
+  const payload = {
+    user_id: userId,
+    title: title
+  };
+  
+  console.log("Request URL:", `${API_BASE_URL}/conversations`);
+  console.log("Request payload:", JSON.stringify(payload));
+  
   const response = await fetch(`${API_BASE_URL}/conversations`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Accept': 'application/json',
     },
-    body: JSON.stringify({
-      user_id: userId,
-      title: title
-    }),
+    mode: 'cors',
+    body: JSON.stringify(payload),
   });
+  
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error(`API error: ${response.status} ${response.statusText}`, errorText);
+    throw new Error(`API error: ${response.status} ${response.statusText}`);
+  }
+  
   return response.json();
 }
 

@@ -4,23 +4,23 @@ import { ReactNode } from "react";
 
 export const metadata = {
   title: "Marcelino Landen | AI Engineer",
-  description: "Personal website of Marcelino Landen, AI Engineer specializing in AI automation, agent frameworks, and competitive analysis tools",
+  description:
+    "Personal website of Marcelino Landen, AI Engineer specializing in AI automation, agent frameworks, and competitive analysis tools",
   keywords: "AI Engineer, Software Developer, AI Automation, Web Development",
   icons: {
-    icon: [
-      { url: '/favicon.svg', type: 'image/svg+xml' },
-    ],
-    shortcut: '/favicon.svg',
-    apple: '/favicon.svg',
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
   },
   openGraph: {
     title: "Marcelino Landen | AI Engineer",
-    description: "Personal website of Marcelino Landen, AI Engineer specializing in AI automation",
+    description:
+      "Personal website of Marcelino Landen, AI Engineer specializing in AI automation",
     url: "https://marcelinolanden.com",
     siteName: "Marcelino Landen",
     images: [
       {
-        url: "/images/marcelino-avatar.webp",
+        url: "/images/marcelino-avatar-v1.webp",
         width: 800,
         height: 600,
         alt: "Marcelino Landen",
@@ -32,8 +32,9 @@ export const metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Marcelino Landen | AI Engineer",
-    description: "Personal website of Marcelino Landen, AI Engineer specializing in AI automation",
-    images: ["/images/marcelino-avatar.webp"],
+    description:
+      "Personal website of Marcelino Landen, AI Engineer specializing in AI automation",
+    images: ["/images/marcelino-avatar-v1.webp"],
   },
 };
 
