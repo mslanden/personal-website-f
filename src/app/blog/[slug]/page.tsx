@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, FC, use } from "react";
+import { useState, useEffect, FC } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Markdown from "react-markdown";
@@ -25,11 +25,17 @@ const convertToDisplayPost = (dbPost: DbBlogPost): BlogPost => {
   return {
     slug: dbPost.slug,
     title: dbPost.title,
-    date: new Date(dbPost.published_at).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    }),
+    date: dbPost.published_at
+      ? new Date(dbPost.published_at).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })
+      : new Date(dbPost.created_at || Date.now()).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        }),
     author: dbPost.author,
     imageUrl: dbPost.image_url,
     content: dbPost.content,
@@ -199,13 +205,15 @@ interface BlogPageProps {
 const BlogPostPage: FC<BlogPageProps> = ({ params }) => {
   const [post, setPost] = useState<BlogPost | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadPost() {
       setIsLoading(true);
-      // Unwrap params outside try/catch block
-      const slug = use(params).slug;
-      
+
+      // Extract slug directly from params - no more use() hook
+      const slug = params.slug;
+
       try {
         // Try to get from database first
         const dbPost = await getBlogPostBySlug(slug);
@@ -220,6 +228,7 @@ const BlogPostPage: FC<BlogPageProps> = ({ params }) => {
         }
       } catch (error) {
         console.error("Error loading blog post:", error);
+        setError("Failed to load blog post");
         // Try fallback if API fails
         const fallbackPost = fallbackPosts[slug] || null;
         setPost(fallbackPost);
@@ -229,7 +238,7 @@ const BlogPostPage: FC<BlogPageProps> = ({ params }) => {
     }
 
     loadPost();
-  }, [params]);
+  }, [params.slug]); // Proper dependency - just params.slug directly
 
   if (isLoading) {
     return (
@@ -255,6 +264,41 @@ const BlogPostPage: FC<BlogPageProps> = ({ params }) => {
         </header>
         <main className={styles.blogPostContainer}>
           <div className={styles.loading}>Loading post...</div>
+        </main>
+      </div>
+    );
+  }
+
+  if (error && !post) {
+    return (
+      <div className={styles.mainPageContainer}>
+        <header className={styles.headerContainer}>
+          <div className={styles.logo}>
+            <Image
+              src="/logo.svg"
+              alt="Marcelino Landen"
+              width={200}
+              height={80}
+            />
+          </div>
+          <nav aria-label="Main navigation">
+            <Link href="/">Home</Link>
+            <Link href="/about">About</Link>
+            <Link href="/projects">Projects</Link>
+            <Link href="/blog" aria-current="true">
+              Blog
+            </Link>
+            <Link href="/contact">Contact</Link>
+          </nav>
+        </header>
+        <main className={styles.blogPostContainer}>
+          <div className={styles.postNotFound}>
+            <h1>Error Loading Post</h1>
+            <p>{error}</p>
+            <Link href="/blog" className={styles.backButton}>
+              Back to Blog
+            </Link>
+          </div>
         </main>
       </div>
     );
