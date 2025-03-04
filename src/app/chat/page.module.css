@@ -296,13 +296,15 @@
     font-size: 0.9rem;
 }
 
-.messageContent pre {
+.messageContent pre, .markdownPre {
     background: rgba(0, 0, 0, 0.3);
     padding: 1rem;
     border-radius: 0.5rem;
     overflow-x: auto;
     margin: 1rem 0;
     border-left: 2px solid #cd9a6d;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
 
 .messageContent pre code {

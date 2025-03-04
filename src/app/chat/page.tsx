@@ -6,6 +6,7 @@ import SchedulingPanel from "../../components/SchedulingPanel";
 import DocumentViewer from "../../components/DocumentViewer";
 import { sendMessage, createConversation } from "../../services/api";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface Message {
   sender: "user" | "assistant";
@@ -119,22 +120,57 @@ export default function ChatPage() {
       
       setStatusState("speaking");
       
-      // Handle the webhook response - it may have a different structure 
-      // than the previous backend response
+      // Handle the webhook response - it may have a different structure
+      // Log the full response to help debug
+      console.log("Full webhook response in component:", response);
       let aiResponse = "I'm sorry, I couldn't process your request at this time.";
       
       if (response) {
-        // Extract the response from the webhook response
-        if (response.response) {
+        // First check for the output field that we know exists in the response
+        if (response.output) {
+          console.log("Found response.output:", response.output);
+          aiResponse = response.output;
+        } 
+        // Fallbacks for other possible formats
+        else if (response.response) {
+          console.log("Found response.response:", response.response);
           aiResponse = response.response;
         } else if (response.message) {
+          console.log("Found response.message:", response.message);
           aiResponse = response.message;
         } else if (response.text) {
+          console.log("Found response.text:", response.text);
           aiResponse = response.text;
         } else if (response.content) {
+          console.log("Found response.content:", response.content);
           aiResponse = response.content;
+        } else if (response.answer) {
+          console.log("Found response.answer:", response.answer);
+          aiResponse = response.answer;
+        } else if (response.reply) {
+          console.log("Found response.reply:", response.reply);
+          aiResponse = response.reply;
+        } else if (response.data && typeof response.data === 'object') {
+          // Try to find a likely response field in the data object
+          console.log("Checking response.data object:", response.data);
+          for (const key of ['output', 'response', 'message', 'text', 'content', 'answer', 'reply']) {
+            if (response.data[key]) {
+              console.log(`Found response.data.${key}:`, response.data[key]);
+              aiResponse = response.data[key];
+              break;
+            }
+          }
         } else if (typeof response === 'string') {
+          console.log("Response is a string:", response);
           aiResponse = response;
+        } else {
+          // Last resort: stringify the whole response
+          console.log("No recognized fields, stringifying full response");
+          try {
+            aiResponse = "Received raw response: " + JSON.stringify(response);
+          } catch (e) {
+            console.error("Failed to stringify response:", e);
+          }
         }
       }
       
@@ -205,7 +241,27 @@ export default function ChatPage() {
                   {msg.sender === "user" ? (
                     sanitizeResponse(msg.text)
                   ) : (
-                    <ReactMarkdown>{sanitizeResponse(msg.text)}</ReactMarkdown>
+                    <ReactMarkdown 
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        // Ensure code blocks render properly
+                        code: ({node, inline, className, children, ...props}) => {
+                          return !inline ? (
+                            <pre className={styles.markdownPre}>
+                              <code className={className} {...props}>
+                                {children}
+                              </code>
+                            </pre>
+                          ) : (
+                            <code className={className} {...props}>
+                              {children}
+                            </code>
+                          );
+                        }
+                      }}
+                    >
+                      {sanitizeResponse(msg.text)}
+                    </ReactMarkdown>
                   )}
                 </div>
               </div>
