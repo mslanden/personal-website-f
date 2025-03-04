@@ -1,6 +1,5 @@
 // API service for communicating with the backend
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://0r8o786206.execute-api.us-east-1.amazonaws.com/dev';
-console.log("Using API base URL:", API_BASE_URL);
+const MAYA_WEBHOOK_URL = 'https://marcelinosl.app.n8n.cloud/webhook/fd88feec-9410-4487-9438-4d7f94d7fc6c';
 
 // Types
 interface MessagePayload {
@@ -12,108 +11,82 @@ interface MessagePayload {
 
 // Chat/Message functions
 export async function sendMessage(payload: MessagePayload) {
-  console.log("Sending message to API:", payload);
-  const response = await fetch(`${API_BASE_URL}/messages`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    },
-    mode: 'cors',
-    body: JSON.stringify(payload),
-  });
+  console.log("Sending message to Maya webhook:", payload);
   
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error(`API error: ${response.status} ${response.statusText}`, errorText);
-    throw new Error(`API error: ${response.status} ${response.statusText}`);
+  try {
+    const response = await fetch(MAYA_WEBHOOK_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({
+        message: payload.content,
+        user_id: payload.user_id,
+        conversation_id: payload.conversation_id
+      }),
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`Webhook error: ${response.status} ${response.statusText}`, errorText);
+      throw new Error(`Webhook error: ${response.status} ${response.statusText}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error("Error sending message to Maya webhook:", error);
+    throw error;
   }
-  
-  return response.json();
 }
 
 export async function getConversation(conversationId: string) {
   console.log("Getting conversation:", conversationId);
-  const response = await fetch(`${API_BASE_URL}/conversations/${conversationId}`, {
-    method: 'GET',
-    headers: {
-      'Accept': 'application/json',
-    },
-    mode: 'cors',
-  });
-  
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error(`API error: ${response.status} ${response.statusText}`, errorText);
-    throw new Error(`API error: ${response.status} ${response.statusText}`);
-  }
-  
-  return response.json();
+  // Since we're only using the webhook now, just return a mock response
+  return {
+    status: "success",
+    data: {
+      id: conversationId,
+      messages: []
+    }
+  };
 }
 
 export async function createConversation(userId: string, title: string) {
   console.log("Creating conversation for user:", userId, "with title:", title);
-  const payload = {
-    user_id: userId,
-    title: title
+  
+  // Since we're only using the webhook now, just return a mock conversation ID
+  const conversationId = `conv-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+  
+  return {
+    status: "success",
+    data: {
+      id: conversationId,
+      user_id: userId,
+      title: title,
+      created_at: new Date().toISOString()
+    }
   };
-  
-  console.log("Request URL:", `${API_BASE_URL}/conversations`);
-  console.log("Request payload:", JSON.stringify(payload));
-  
-  const response = await fetch(`${API_BASE_URL}/conversations`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    },
-    mode: 'cors',
-    body: JSON.stringify(payload),
-  });
-  
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error(`API error: ${response.status} ${response.statusText}`, errorText);
-    throw new Error(`API error: ${response.status} ${response.statusText}`);
-  }
-  
-  return response.json();
 }
 
 // Note functions
 export async function getUserNotes(userId: string) {
-  const response = await fetch(`${API_BASE_URL}/notes/${userId}`);
-  return response.json();
+  console.log("getUserNotes is not implemented with the webhook");
+  return { status: "error", message: "This functionality is not available" };
 }
 
 export async function createNote(userId: string, title: string, content: string) {
-  const response = await fetch(`${API_BASE_URL}/notes`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      user_id: userId,
-      title: title,
-      content: content
-    }),
-  });
-  return response.json();
+  console.log("createNote is not implemented with the webhook");
+  return { status: "error", message: "This functionality is not available" };
 }
 
 // Schedule functions
 export async function getUserSchedules(userId: string) {
-  const response = await fetch(`${API_BASE_URL}/schedules/${userId}`);
-  return response.json();
+  console.log("getUserSchedules is not implemented with the webhook");
+  return { status: "error", message: "This functionality is not available" };
 }
 
 export async function createSchedule(scheduleData: any) {
-  const response = await fetch(`${API_BASE_URL}/schedules`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(scheduleData),
-  });
-  return response.json();
+  console.log("createSchedule is not implemented with the webhook");
+  return { status: "error", message: "This functionality is not available" };
 }

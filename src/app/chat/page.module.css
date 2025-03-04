@@ -231,6 +231,117 @@
     transition: all 0.3s ease;
     overflow: hidden;
     margin-right: 16px;
+    color: #e0e0e0;
+    line-height: 1.5;
+}
+
+/* Markdown styling */
+.messageContent h1,
+.messageContent h2,
+.messageContent h3,
+.messageContent h4,
+.messageContent h5,
+.messageContent h6 {
+    color: #cd9a6d;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+.messageContent h1 {
+    font-size: 1.5rem;
+    border-bottom: 1px solid rgba(205, 154, 109, 0.3);
+    padding-bottom: 0.3rem;
+}
+
+.messageContent h2 {
+    font-size: 1.3rem;
+}
+
+.messageContent h3 {
+    font-size: 1.1rem;
+}
+
+.messageContent p {
+    margin-bottom: 1rem;
+}
+
+.messageContent ul,
+.messageContent ol {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.messageContent li {
+    margin-bottom: 0.25rem;
+}
+
+.messageContent a {
+    color: #cd9a6d;
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(205, 154, 109, 0.5);
+    transition: all 0.2s ease;
+}
+
+.messageContent a:hover {
+    border-bottom: 1px solid #cd9a6d;
+}
+
+.messageContent code {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
+.messageContent pre {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+    border-left: 2px solid #cd9a6d;
+}
+
+.messageContent pre code {
+    background: none;
+    padding: 0;
+    font-size: 0.85rem;
+    color: #e0e0e0;
+}
+
+.messageContent blockquote {
+    border-left: 3px solid #cd9a6d;
+    padding-left: 1rem;
+    margin-left: 0;
+    margin-right: 0;
+    font-style: italic;
+    color: #cccccc;
+}
+
+.messageContent hr {
+    border: none;
+    border-top: 1px solid rgba(205, 154, 109, 0.3);
+    margin: 1.5rem 0;
+}
+
+.messageContent table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+
+.messageContent th,
+.messageContent td {
+    padding: 0.5rem;
+    border: 1px solid rgba(205, 154, 109, 0.3);
+    text-align: left;
+}
+
+.messageContent th {
+    background: rgba(205, 154, 109, 0.1);
 }
 
 .messageContent img,

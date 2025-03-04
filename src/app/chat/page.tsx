@@ -5,6 +5,7 @@ import styles from "./page.module.css";
 import SchedulingPanel from "../../components/SchedulingPanel";
 import DocumentViewer from "../../components/DocumentViewer";
 import { sendMessage, createConversation } from "../../services/api";
+import ReactMarkdown from "react-markdown";
 
 interface Message {
   sender: "user" | "assistant";
@@ -12,7 +13,8 @@ interface Message {
 }
 
 function sanitizeResponse(text: string) {
-  return text.replace(/[`]/g, "");
+  // We don't need to remove backticks since they're valid in Markdown for code blocks
+  return text;
 }
 
 export default function ChatPage() {
@@ -107,7 +109,7 @@ export default function ChatPage() {
     setStatusState("loading");
     
     try {
-      // Send to the Lambda backend directly
+      // Send to Maya webhook
       const response = await sendMessage({
         user_id: userId,
         conversation_id: conversationId,
@@ -117,18 +119,29 @@ export default function ChatPage() {
       
       setStatusState("speaking");
       
-      if (response.status === "success" && response.data) {
-        // Get the AI response
-        const aiResponse = response.data.ai_response?.content || 
-                         "I'm sorry, I couldn't process your request at this time.";
-                         
-        setChatHistory((prev) => [
-          ...prev,
-          { sender: "assistant", text: aiResponse },
-        ]);
-      } else {
-        throw new Error("Invalid response from backend");
+      // Handle the webhook response - it may have a different structure 
+      // than the previous backend response
+      let aiResponse = "I'm sorry, I couldn't process your request at this time.";
+      
+      if (response) {
+        // Extract the response from the webhook response
+        if (response.response) {
+          aiResponse = response.response;
+        } else if (response.message) {
+          aiResponse = response.message;
+        } else if (response.text) {
+          aiResponse = response.text;
+        } else if (response.content) {
+          aiResponse = response.content;
+        } else if (typeof response === 'string') {
+          aiResponse = response;
+        }
       }
+      
+      setChatHistory((prev) => [
+        ...prev,
+        { sender: "assistant", text: aiResponse },
+      ]);
 
       setTimeout(() => {
         setStatusState("idle");
@@ -138,13 +151,13 @@ export default function ChatPage() {
       setPanel({ visible: false, type: null, content: null });
       
     } catch (error: any) {
-      console.error("API error:", error);
+      console.error("Webhook error:", error);
       setStatusState("idle");
       setChatHistory((prev) => [
         ...prev,
         {
           sender: "assistant",
-          text: "Sorry, I'm having trouble connecting to my backend. Please try again later.",
+          text: "Sorry, I'm having trouble connecting to Maya. Please try again later.",
         },
       ]);
     }
@@ -189,7 +202,11 @@ export default function ChatPage() {
                   />
                 )}
                 <div className={styles.messageContent}>
-                  {sanitizeResponse(msg.text)}
+                  {msg.sender === "user" ? (
+                    sanitizeResponse(msg.text)
+                  ) : (
+                    <ReactMarkdown>{sanitizeResponse(msg.text)}</ReactMarkdown>
+                  )}
                 </div>
               </div>
             ))}
