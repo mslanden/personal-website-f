@@ -103,14 +103,27 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
       
       setStatusState("speaking");
       
-      if (response && response.status === "success" && response.data) {
-        const assistantMessage = response.data.content || "I'm not sure how to respond to that.";
+      console.log("Response from Maya webhook:", response);
+      
+      // Handle different response formats
+      if (response) {
+        let assistantMessage = "I'm not sure how to respond to that.";
+        
+        // Check for the new format with 'output' field
+        if (response.output) {
+          assistantMessage = response.output;
+        }
+        // Check for the old format with status and data
+        else if (response.status === "success" && response.data && response.data.content) {
+          assistantMessage = response.data.content;
+        }
+        
         setChatHistory((prev) => [
           ...prev,
           { sender: "assistant", text: assistantMessage },
         ]);
       } else {
-        console.error("Unexpected response format:", response);
+        console.error("Empty response received");
         setChatHistory((prev) => [
           ...prev,
           { sender: "assistant", text: "Sorry, I encountered an error processing your request." },
