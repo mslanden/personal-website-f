@@ -127,3 +127,228 @@
   gap: 1.5rem;
   margin-top: 1.5rem;
 }
+
+/* Contact submissions page styles */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.backButton {
+  background-color: #333;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.submissionsList {
+  overflow: auto;
+}
+
+.submissionsTable {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.submissionsTable table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.submissionsTable th,
+.submissionsTable td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.submissionsTable th {
+  background-color: #f5f5f5;
+  font-weight: 600;
+}
+
+.submissionRow {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submissionRow:hover {
+  background-color: #f9f9f9;
+}
+
+.submissionRow.selected {
+  background-color: #e3f2fd;
+}
+
+.subjectCell {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.new {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.read {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.replied {
+  background-color: #fff8e1;
+  color: #f57f17;
+}
+
+.actionsCell {
+  white-space: nowrap;
+}
+
+.deleteButton {
+  background-color: transparent;
+  color: #f44336;
+  border: 1px solid #f44336;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+
+.deleteButton:hover {
+  background-color: #f44336;
+  color: white;
+}
+
+.submissionDetail {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.detailCard {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.detailHeader {
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 1rem;
+}
+
+.detailHeader h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.detailMeta {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.detailMeta p {
+  margin: 0.25rem 0;
+}
+
+.statusActions {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.statusButtons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.statusButton {
+  background-color: transparent;
+  border: 1px solid #ccc;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.statusButton.active {
+  background-color: #333;
+  color: white;
+  border-color: #333;
+}
+
+.messageContent {
+  margin-bottom: 1.5rem;
+}
+
+.messageText {
+  background-color: #f9f9f9;
+  padding: 1rem;
+  border-radius: 4px;
+  white-space: pre-wrap;
+}
+
+.messageText p {
+  margin: 0.5rem 0;
+}
+
+.detailActions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.replyButton {
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.replyButton:hover {
+  background-color: #1976d2;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .contentGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .submissionDetail {
+    margin-top: 2rem;
+  }
+}

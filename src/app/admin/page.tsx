@@ -82,6 +82,7 @@ export default function AdminPage() {
       <div className={styles.nav}>
         <button onClick={() => router.push('/admin/blog')}>Manage Blog Posts</button>
         <button onClick={() => router.push('/admin/projects')}>Manage Projects</button>
+        <button onClick={() => router.push('/admin/contact')}>View Contact Submissions</button>
         <button onClick={async () => {
           await auth.signOut();
           setIsAuthenticated(false);

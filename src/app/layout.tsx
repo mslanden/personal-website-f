@@ -1,6 +1,7 @@
 // frontend/src/app/layout.tsx
 import "../app/globals.css";
 import { ReactNode } from "react";
+import ClientChatWrapper from "../components/ClientChatWrapper";
 
 export const metadata = {
   title: "Marcelino Landen | AI Engineer",
@@ -20,9 +21,9 @@ export const metadata = {
     siteName: "Marcelino Landen",
     images: [
       {
-        url: "/images/marcelino-avatar-v1.webp",
-        width: 800,
-        height: 600,
+        url: "/images/OG-image.png",
+        width: 1200,
+        height: 630,
         alt: "Marcelino Landen",
       },
     ],
@@ -34,14 +35,17 @@ export const metadata = {
     title: "Marcelino Landen | AI Engineer",
     description:
       "Personal website of Marcelino Landen, AI Engineer specializing in AI automation",
-    images: ["/images/marcelino-avatar-v1.webp"],
+    images: ["/images/OG-image.png"],
   },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {children}
+        <ClientChatWrapper />
+      </body>
     </html>
   );
 }

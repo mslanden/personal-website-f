@@ -148,30 +148,29 @@ const convertToDetailProject = (dbProject: ProjectType): Project => {
 };
 
 export default function ProjectDetailPage({ params }: { params: { id: string } | Promise<{ id: string }> }) {
+  // Unwrap params using React.use() to handle it as a Promise
+  const unwrappedParams = params instanceof Promise ? use(params) : params;
   const [project, setProject] = useState<Project | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
-  // Unwrap params with React.use for future Next.js compatibility
-  const { id } = use(params as Promise<{ id: string }>);
   
   useEffect(() => {
     const loadProject = async () => {
-      setIsLoading(true);
       try {
-        // Try to get from database first
+        // Try to get project from database
+        const id = unwrappedParams.id;
         const dbProject = await getProjectBySlug(id);
         
         if (dbProject) {
-          // Convert database project to detail project
           setProject(convertToDetailProject(dbProject));
         } else {
-          // Fallback to static data
+          // If not found in database, try to get from fallback
           const fallbackProject = getFallbackProject(id);
           setProject(fallbackProject);
         }
       } catch (error) {
         console.error("Error loading project:", error);
         // Try fallback if API fails
-        const fallbackProject = getFallbackProject(id);
+        const fallbackProject = getFallbackProject(unwrappedParams.id);
         setProject(fallbackProject);
       } finally {
         setIsLoading(false);
@@ -179,22 +178,24 @@ export default function ProjectDetailPage({ params }: { params: { id: string } |
     };
     
     loadProject();
-  }, [id]);
+  }, [unwrappedParams.id]);
   
   if (isLoading) {
     return (
       <div className={styles.mainPageContainer}>
-        <header className={styles.headerContainer}>
-          <div className={styles.logo}>
-            <Image src="/logo.svg" alt="Marcelino Landen" width={200} height={80} />
+        <header className={styles.header}>
+          <div className={styles.headerContent}>
+            <div className={styles.logo}>
+              <Link href="/" className={styles.logoText}>Marcelino Landen</Link>
+            </div>
+            <nav className={styles.navigation}>
+              <Link href="/">Home</Link>
+              <Link href="/services">Services</Link>
+              <Link href="/projects" aria-current="page">Projects</Link>
+              <Link href="/blog">Blog</Link>
+              <Link href="/contact">Contact</Link>
+            </nav>
           </div>
-          <nav aria-label="Main navigation">
-            <Link href="/">Home</Link>
-            <Link href="/about">About</Link>
-            <Link href="/projects" aria-current="true">Projects</Link>
-            <Link href="/blog">Blog</Link>
-            <Link href="/contact">Contact</Link>
-          </nav>
         </header>
         <main className={styles.projectDetailMain}>
           <div className={styles.loading}>Loading project details...</div>
@@ -206,17 +207,19 @@ export default function ProjectDetailPage({ params }: { params: { id: string } |
   if (!project) {
     return (
       <div className={styles.mainPageContainer}>
-        <header className={styles.headerContainer}>
-          <div className={styles.logo}>
-            <Image src="/logo.svg" alt="Marcelino Landen" width={200} height={80} />
+        <header className={styles.header}>
+          <div className={styles.headerContent}>
+            <div className={styles.logo}>
+              <Link href="/" className={styles.logoText}>Marcelino Landen</Link>
+            </div>
+            <nav className={styles.navigation}>
+              <Link href="/">Home</Link>
+              <Link href="/services">Services</Link>
+              <Link href="/projects" aria-current="page">Projects</Link>
+              <Link href="/blog">Blog</Link>
+              <Link href="/contact">Contact</Link>
+            </nav>
           </div>
-          <nav aria-label="Main navigation">
-            <Link href="/">Home</Link>
-            <Link href="/about">About</Link>
-            <Link href="/projects" aria-current="true">Projects</Link>
-            <Link href="/blog">Blog</Link>
-            <Link href="/contact">Contact</Link>
-          </nav>
         </header>
         <main className={styles.projectDetailMain}>
           <div className={styles.projectNotFound}>
@@ -233,17 +236,19 @@ export default function ProjectDetailPage({ params }: { params: { id: string } |
   
   return (
     <div className={styles.mainPageContainer}>
-      <header className={styles.headerContainer}>
-        <div className={styles.logo}>
-          <Image src="/logo.svg" alt="Marcelino Landen" width={200} height={80} />
+      <header className={styles.header}>
+        <div className={styles.headerContent}>
+          <div className={styles.logo}>
+            <Link href="/" className={styles.logoText}>Marcelino Landen</Link>
+          </div>
+          <nav className={styles.navigation}>
+            <Link href="/">Home</Link>
+            <Link href="/services">Services</Link>
+            <Link href="/projects" aria-current="page">Projects</Link>
+            <Link href="/blog">Blog</Link>
+            <Link href="/contact">Contact</Link>
+          </nav>
         </div>
-        <nav aria-label="Main navigation">
-          <Link href="/">Home</Link>
-          <Link href="/about">About</Link>
-          <Link href="/projects" aria-current="true">Projects</Link>
-          <Link href="/blog">Blog</Link>
-          <Link href="/contact">Contact</Link>
-        </nav>
       </header>
       
       <main className={styles.projectDetailMain}>
@@ -345,11 +350,11 @@ export default function ProjectDetailPage({ params }: { params: { id: string } |
       </main>
       
       <footer className={styles.footer}>
-        <span>Copyright © 2025 Marcelino Landen</span>
-        <div className={styles.socialLinks}>
-          <Link href="https://twitter.com" target="_blank" rel="noopener noreferrer">Twitter</Link>
-          <Link href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</Link>
-          <Link href="https://linkedin.com" target="_blank" rel="noopener noreferrer">LinkedIn</Link>
+        <div>
+          © {new Date().getFullYear()} Marcelino Landen. All rights reserved.
+        </div>
+        <div>
+          marcelino@marcelinolanden.com
         </div>
       </footer>
     </div>

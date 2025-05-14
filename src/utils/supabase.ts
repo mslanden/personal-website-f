@@ -144,4 +144,34 @@ export const database = {
     
     return { data, error };
   },
+  
+  // Contact submissions
+  getContactSubmissions: async () => {
+    const { data, error } = await supabase
+      .from('contact_submissions')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    return { data, error };
+  },
+  
+  updateContactSubmissionStatus: async (id: string, status: string) => {
+    const { data, error } = await supabase
+      .from('contact_submissions')
+      .update({ status })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    return { data, error };
+  },
+  
+  deleteContactSubmission: async (id: string) => {
+    const { error } = await supabase
+      .from('contact_submissions')
+      .delete()
+      .eq('id', id);
+    
+    return { error };
+  },
 };

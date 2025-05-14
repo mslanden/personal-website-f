@@ -13,6 +13,7 @@ export default function BlogPage() {
   const [categories, setCategories] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isVisible, setIsVisible] = useState(false);
 
   // Always include "all" as the first filter
   const filters = [
@@ -24,6 +25,10 @@ export default function BlogPage() {
     }))
   ];
   
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -92,35 +97,27 @@ export default function BlogPage() {
     ); // Filter by search term
 
   return (
-    <div className={styles.container}>
-      <header className={styles.headerContainer}>
-        <div className={styles.logo}>
-          <Image
-            src="/logo.svg"
-            alt="Marcelino Landen"
-            width={150}
-            height={60}
-            priority
-            className={styles.logoImage}
-          />
+    <div className={styles.blogPageContainer}>
+      <header className={styles.header}>
+        <div className={styles.headerContent}>
+          <div className={styles.logo}>
+            <Link href="/" className={styles.logoText}>Marcelino Landen</Link>
+          </div>
+          <nav className={styles.navigation}>
+            <Link href="/">Home</Link>
+            <Link href="/services">Services</Link>
+            <Link href="/projects">Projects</Link>
+            <Link href="/blog" aria-current="page">Blog</Link>
+            <Link href="/contact">Contact</Link>
+          </nav>
         </div>
-        <nav aria-label="Main navigation">
-          <Link href="/">Home</Link>
-          <Link href="/about">About</Link>
-          <Link href="/projects">Projects</Link>
-          <Link href="/blog" aria-current="page" className={styles.active}>
-            Blog
-          </Link>
-          <Link href="/contact">Contact</Link>
-        </nav>
       </header>
 
       <main className={styles.main}>
-        <section className={styles.blogHero}>
+        <section className={`${styles.heroSection} ${isVisible ? styles.visible : ""}`}>
           <div className={styles.heroContent}>
-            <h1>Insights & Thoughts</h1>
-            <div className={styles.divider}></div>
-            <p>Explorations in AI, development, and the tech landscape</p>
+            <h1 className={styles.heroTitle}>Insights & Thoughts</h1>
+            <p className={styles.heroDescription}>Explorations in AI, development, and the tech landscape</p>
           </div>
         </section>
 
@@ -287,36 +284,11 @@ export default function BlogPage() {
       </main>
 
       <footer className={styles.footer}>
-        <div className={styles.footerContent}>
-          <div className={styles.footerLeft}>
-            <p>© 2025 Marcelino Landen. All rights reserved.</p>
-          </div>
-          <div className={styles.footerRight}>
-            <a
-              href="https://github.com/yourusername"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.socialLink}
-            >
-              GitHub
-            </a>
-            <a
-              href="https://linkedin.com/in/yourusername"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.socialLink}
-            >
-              LinkedIn
-            </a>
-            <a
-              href="https://x.com/LandenMarcelino"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.socialLink}
-            >
-              X (Twitter)
-            </a>
-          </div>
+        <div>
+          © {new Date().getFullYear()} Marcelino Landen. All rights reserved.
+        </div>
+        <div>
+          marcelino@marcelinolanden.com
         </div>
       </footer>
     </div>

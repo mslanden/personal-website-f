@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, FC } from "react";
+import { useState, useEffect, FC, use } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Markdown from "react-markdown";
@@ -31,7 +31,7 @@ const convertToDisplayPost = (dbPost: DbBlogPost): BlogPost => {
           month: "long",
           day: "numeric",
         })
-      : new Date(dbPost.created_at || Date.now()).toLocaleDateString("en-US", {
+      : new Date(Date.now()).toLocaleDateString("en-US", {
           year: "numeric",
           month: "long",
           day: "numeric",
@@ -199,38 +199,40 @@ These Next.js optimizations have helped us at Agentica AI reduce load times by o
 interface BlogPageProps {
   params: {
     slug: string;
-  };
+  } | Promise<{
+    slug: string;
+  }>;
 }
 
 const BlogPostPage: FC<BlogPageProps> = ({ params }) => {
+  // Unwrap params using React.use() to handle it as a Promise
+  const unwrappedParams = params instanceof Promise ? use(params) : params;
+
   const [post, setPost] = useState<BlogPost | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function loadPost() {
+    const loadPost = async () => {
       setIsLoading(true);
 
-      // Extract slug directly from params - no more use() hook
-      const slug = params.slug;
-
       try {
-        // Try to get from database first
-        const dbPost = await getBlogPostBySlug(slug);
+        // Try to get post from database
+        const dbPost = await getBlogPostBySlug(unwrappedParams.slug);
 
         if (dbPost) {
           // Convert database post to display format
           setPost(convertToDisplayPost(dbPost));
         } else {
-          // Fallback to static data
-          const fallbackPost = fallbackPosts[slug] || null;
+          // Try to get from fallback data
+          const fallbackPost = fallbackPosts[unwrappedParams.slug] || null;
           setPost(fallbackPost);
         }
       } catch (error) {
         console.error("Error loading blog post:", error);
         setError("Failed to load blog post");
         // Try fallback if API fails
-        const fallbackPost = fallbackPosts[slug] || null;
+        const fallbackPost = fallbackPosts[unwrappedParams.slug] || null;
         setPost(fallbackPost);
       } finally {
         setIsLoading(false);
@@ -238,29 +240,24 @@ const BlogPostPage: FC<BlogPageProps> = ({ params }) => {
     }
 
     loadPost();
-  }, [params.slug]); // Proper dependency - just params.slug directly
+  }, [unwrappedParams.slug]); // Proper dependency - just params.slug directly
 
   if (isLoading) {
     return (
       <div className={styles.mainPageContainer}>
-        <header className={styles.headerContainer}>
-          <div className={styles.logo}>
-            <Image
-              src="/logo.svg"
-              alt="Marcelino Landen"
-              width={200}
-              height={80}
-            />
+        <header className={styles.header}>
+          <div className={styles.headerContent}>
+            <div className={styles.logo}>
+              <Link href="/" className={styles.logoText}>Marcelino Landen</Link>
+            </div>
+            <nav className={styles.navigation}>
+              <Link href="/">Home</Link>
+              <Link href="/services">Services</Link>
+              <Link href="/projects">Projects</Link>
+              <Link href="/blog" aria-current="page">Blog</Link>
+              <Link href="/contact">Contact</Link>
+            </nav>
           </div>
-          <nav aria-label="Main navigation">
-            <Link href="/">Home</Link>
-            <Link href="/about">About</Link>
-            <Link href="/projects">Projects</Link>
-            <Link href="/blog" aria-current="true">
-              Blog
-            </Link>
-            <Link href="/contact">Contact</Link>
-          </nav>
         </header>
         <main className={styles.blogPostContainer}>
           <div className={styles.loading}>Loading post...</div>
@@ -272,24 +269,19 @@ const BlogPostPage: FC<BlogPageProps> = ({ params }) => {
   if (error && !post) {
     return (
       <div className={styles.mainPageContainer}>
-        <header className={styles.headerContainer}>
-          <div className={styles.logo}>
-            <Image
-              src="/logo.svg"
-              alt="Marcelino Landen"
-              width={200}
-              height={80}
-            />
+        <header className={styles.header}>
+          <div className={styles.headerContent}>
+            <div className={styles.logo}>
+              <Link href="/" className={styles.logoText}>Marcelino Landen</Link>
+            </div>
+            <nav className={styles.navigation}>
+              <Link href="/">Home</Link>
+              <Link href="/services">Services</Link>
+              <Link href="/projects">Projects</Link>
+              <Link href="/blog" aria-current="page">Blog</Link>
+              <Link href="/contact">Contact</Link>
+            </nav>
           </div>
-          <nav aria-label="Main navigation">
-            <Link href="/">Home</Link>
-            <Link href="/about">About</Link>
-            <Link href="/projects">Projects</Link>
-            <Link href="/blog" aria-current="true">
-              Blog
-            </Link>
-            <Link href="/contact">Contact</Link>
-          </nav>
         </header>
         <main className={styles.blogPostContainer}>
           <div className={styles.postNotFound}>
@@ -307,24 +299,19 @@ const BlogPostPage: FC<BlogPageProps> = ({ params }) => {
   if (!post) {
     return (
       <div className={styles.mainPageContainer}>
-        <header className={styles.headerContainer}>
-          <div className={styles.logo}>
-            <Image
-              src="/logo.svg"
-              alt="Marcelino Landen"
-              width={200}
-              height={80}
-            />
+        <header className={styles.header}>
+          <div className={styles.headerContent}>
+            <div className={styles.logo}>
+              <Link href="/" className={styles.logoText}>Marcelino Landen</Link>
+            </div>
+            <nav className={styles.navigation}>
+              <Link href="/">Home</Link>
+              <Link href="/services">Services</Link>
+              <Link href="/projects">Projects</Link>
+              <Link href="/blog" aria-current="page">Blog</Link>
+              <Link href="/contact">Contact</Link>
+            </nav>
           </div>
-          <nav aria-label="Main navigation">
-            <Link href="/">Home</Link>
-            <Link href="/about">About</Link>
-            <Link href="/projects">Projects</Link>
-            <Link href="/blog" aria-current="true">
-              Blog
-            </Link>
-            <Link href="/contact">Contact</Link>
-          </nav>
         </header>
         <main className={styles.blogPostContainer}>
           <div className={styles.postNotFound}>
@@ -341,24 +328,19 @@ const BlogPostPage: FC<BlogPageProps> = ({ params }) => {
 
   return (
     <div className={styles.mainPageContainer}>
-      <header className={styles.headerContainer}>
-        <div className={styles.logo}>
-          <Image
-            src="/logo.svg"
-            alt="Marcelino Landen"
-            width={200}
-            height={80}
-          />
+      <header className={styles.header}>
+        <div className={styles.headerContent}>
+          <div className={styles.logo}>
+            <Link href="/" className={styles.logoText}>Marcelino Landen</Link>
+          </div>
+          <nav className={styles.navigation}>
+            <Link href="/">Home</Link>
+            <Link href="/services">Services</Link>
+            <Link href="/projects">Projects</Link>
+            <Link href="/blog" aria-current="page">Blog</Link>
+            <Link href="/contact">Contact</Link>
+          </nav>
         </div>
-        <nav aria-label="Main navigation">
-          <Link href="/">Home</Link>
-          <Link href="/about">About</Link>
-          <Link href="/projects">Projects</Link>
-          <Link href="/blog" aria-current="true">
-            Blog
-          </Link>
-          <Link href="/contact">Contact</Link>
-        </nav>
       </header>
 
       <main className={styles.blogPostMain}>
@@ -394,11 +376,11 @@ const BlogPostPage: FC<BlogPageProps> = ({ params }) => {
       </main>
 
       <footer className={styles.footer}>
-        <span>Copyright © 2025 Marcelino Landen</span>
-        <div className={styles.socialLinks}>
-          <Link href="https://x.com/LandenMarcelino">X (Twitter)</Link>
-          <Link href="#">GitHub</Link>
-          <Link href="#">LinkedIn</Link>
+        <div>
+          © {new Date().getFullYear()} Marcelino Landen. All rights reserved.
+        </div>
+        <div>
+          marcelino@marcelinolanden.com
         </div>
       </footer>
     </div>

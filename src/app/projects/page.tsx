@@ -6,12 +6,16 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { getProjects, getFeaturedProject, getProjectCategories, Project } from "../../lib/supabase-client";
 
+// Extend the Project type to make 'features' optional
+type ProjectWithOptionalFeatures = Omit<Project, 'features'> & { features?: string[] };
+
 export default function ProjectsPage() {
   const [activeFilter, setActiveFilter] = useState("all");
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<ProjectWithOptionalFeatures[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
-  const [featuredProject, setFeaturedProject] = useState<Project | null>(null);
+  const [featuredProject, setFeaturedProject] = useState<ProjectWithOptionalFeatures | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
 
   // Dynamic filters with "All" as the first option
   const filters = [
@@ -25,8 +29,13 @@ export default function ProjectsPage() {
     }))
   ];
 
+  // Animation effect for hero section
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
   // Fallback projects in case database is empty
-  const fallbackProjects = [
+  const fallbackProjects: ProjectWithOptionalFeatures[] = [
     {
       id: "ai-productivity",
       category: "ai",
@@ -151,38 +160,27 @@ export default function ProjectsPage() {
         );
 
   return (
-    <div className={styles.container}>
-      <header className={styles.headerContainer}>
-        <div className={styles.logo}>
-          <Image
-            src="/logo.svg"
-            alt="Marcelino Landen"
-            width={150}
-            height={60}
-            priority
-            className={styles.logoImage}
-          />
+    <div className={styles.projectsPageContainer}>
+      <header className={styles.header}>
+        <div className={styles.headerContent}>
+          <div className={styles.logo}>
+            <Link href="/" className={styles.logoText}>Marcelino Landen</Link>
+          </div>
+          <nav className={styles.navigation}>
+            <Link href="/">Home</Link>
+            <Link href="/services">Services</Link>
+            <Link href="/projects" aria-current="page">Projects</Link>
+            <Link href="/blog">Blog</Link>
+            <Link href="/contact">Contact</Link>
+          </nav>
         </div>
-        <nav aria-label="Main navigation">
-          <Link href="/">Home</Link>
-          <Link href="/about">About</Link>
-          <Link href="/projects" aria-current="page" className={styles.active}>
-            Projects
-          </Link>
-          <Link href="/blog">Blog</Link>
-          <Link href="/contact">Contact</Link>
-        </nav>
       </header>
 
       <main className={styles.main}>
-        <section className={styles.projectsHero}>
+        <section className={`${styles.heroSection} ${isVisible ? styles.visible : ""}`}>
           <div className={styles.heroContent}>
-            <h1>Portfolio</h1>
-            <div className={styles.divider}></div>
-            <p>
-              An evolving collection of my work in AI, web development, and
-              interactive experiences
-            </p>
+            <h1 className={styles.heroTitle}>My Projects</h1>
+            <p className={styles.heroDescription}>Explore my portfolio of work across AI, web development, and more</p>
           </div>
         </section>
 
@@ -304,36 +302,11 @@ export default function ProjectsPage() {
       </main>
 
       <footer className={styles.footer}>
-        <div className={styles.footerContent}>
-          <div className={styles.footerLeft}>
-            <p>© 2025 Marcelino Landen. All rights reserved.</p>
-          </div>
-          <div className={styles.footerRight}>
-            <a
-              href="https://github.com/yourusername"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.socialLink}
-            >
-              GitHub
-            </a>
-            <a
-              href="https://linkedin.com/in/yourusername"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.socialLink}
-            >
-              LinkedIn
-            </a>
-            <a
-              href="https://x.com/LandenMarcelino"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.socialLink}
-            >
-              X (Twitter)
-            </a>
-          </div>
+        <div>
+          © {new Date().getFullYear()} Marcelino Landen. All rights reserved.
+        </div>
+        <div>
+          marcelino@marcelinolanden.com
         </div>
       </footer>
     </div>

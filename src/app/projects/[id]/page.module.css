@@ -1,60 +1,110 @@
 .mainPageContainer {
+  /* Variables - defined at component level instead of :root */
+  --background-dark: #1a2a36;
+  --background-darker: #152430;
+  --text-light: #e8e6d9;
+  --text-muted: #a7a395;
+  --accent-gold: #cd9a6d;
+  --accent-gold-light: #e5b995;
+  --card-bg: #223240;
+  --card-border: #2d4050;
+  --header-height: 80px;
+  
   min-height: 100vh;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  background-color: var(--primary-bg);
   color: var(--text-light);
+  position: relative;
+  overflow-x: hidden;
+  background-color: var(--background-dark);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
 
-.headerContainer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 2rem;
-  border-bottom: 1px solid rgba(205, 154, 109, 0.2);
-  background: rgba(10, 10, 10, 0.8);
-  backdrop-filter: blur(10px);
+/* Header */
+.header {
+  height: var(--header-height);
+  width: 100%;
   position: sticky;
   top: 0;
   z-index: 100;
+  background-color: var(--background-darker);
+  border-bottom: 1px solid var(--card-border);
+}
+
+.headerContent {
+  max-width: 1200px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .logo {
-  max-width: 200px;
+  display: flex;
+  align-items: center;
 }
 
-.headerContainer nav {
+.logoText {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-light);
+  text-decoration: none;
+  background: linear-gradient(45deg, var(--text-light), var(--accent-gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: all 0.3s ease;
+}
+
+.logoText:hover {
+  transform: scale(1.02);
+}
+
+.navigation {
   display: flex;
   gap: 2rem;
 }
 
-.headerContainer nav a {
+.navigation a {
   color: var(--text-light);
   text-decoration: none;
-  position: relative;
-  padding-bottom: 5px;
+  font-size: 1rem;
+  font-weight: 500;
   transition: color 0.3s ease;
+  position: relative;
 }
 
-.headerContainer nav a:hover,
-.headerContainer nav a[aria-current="true"] {
-  color: var(--bronze);
-}
-
-.headerContainer nav a::after {
+.navigation a::after {
   content: '';
   position: absolute;
-  width: 0;
-  height: 2px;
-  bottom: 0;
+  bottom: -4px;
   left: 0;
-  background-color: var(--bronze);
-  transition: width 0.3s ease;
+  width: 100%;
+  height: 2px;
+  background-color: var(--accent-gold);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease;
 }
 
-.headerContainer nav a:hover::after,
-.headerContainer nav a[aria-current="true"]::after {
-  width: 100%;
+.navigation a:hover {
+  color: var(--accent-gold);
+}
+
+.navigation a:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.navigation a[aria-current="page"] {
+  color: var(--accent-gold);
+}
+
+.navigation a[aria-current="page"]::after {
+  transform: scaleX(1);
 }
 
 /* Project detail content */
@@ -388,28 +438,14 @@
 
 /* Footer */
 .footer {
+  padding: 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem 2rem;
-  background-color: rgba(10, 10, 10, 0.8);
-  backdrop-filter: blur(10px);
-  border-top: 1px solid rgba(205, 154, 109, 0.2);
-}
-
-.socialLinks {
-  display: flex;
-  gap: 1.5rem;
-}
-
-.socialLinks a {
-  color: var(--bronze);
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-.socialLinks a:hover {
-  color: var(--bronze-light);
+  color: var(--text-muted);
+  border-top: 1px solid var(--card-border);
+  margin-top: auto;
+  font-size: 0.9rem;
 }
 
 /* Responsive adjustments */
@@ -430,13 +466,17 @@
 }
 
 @media (max-width: 768px) {
-  .headerContainer {
-    flex-direction: column;
-    padding: 1rem;
+  .header {
+    height: auto;
+    padding: 1rem 0;
   }
   
-  .headerContainer nav {
-    margin-top: 1rem;
+  .headerContent {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .navigation {
     width: 100%;
     justify-content: center;
     flex-wrap: wrap;
