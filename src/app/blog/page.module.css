@@ -729,15 +729,22 @@
 }
 
 @media (max-width: 768px) {
-  .headerContainer {
-    flex-direction: column;
-    gap: 1rem;
-    padding: 1rem;
+  .header {
+    position: relative;
   }
   
-  .headerContainer nav {
+  .headerContent {
+    flex-direction: column;
+    padding: 1rem;
+    height: auto;
+    gap: 1rem;
+  }
+  
+  .navigation {
     width: 100%;
     justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
   }
   
   .blogGrid {

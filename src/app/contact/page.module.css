@@ -507,9 +507,12 @@
 }
 
 @media (max-width: 576px) {
-  .contactSection,
-  .mapSection {
+  .contactSection {
     padding: 3rem 1.5rem;
+  }
+  
+  .mapSection {
+    padding: 3rem 1.5rem 8rem;
   }
   
   .contactInfo h2,

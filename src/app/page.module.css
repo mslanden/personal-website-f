@@ -501,6 +501,24 @@
 }
 
 @media (max-width: 768px) {
+  .header {
+    position: relative;
+  }
+  
+  .headerContent {
+    flex-direction: column;
+    padding: 1rem;
+    height: auto;
+    gap: 1rem;
+  }
+  
+  .navigation {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
   .heroTitle {
     font-size: 2.5rem;
   }
